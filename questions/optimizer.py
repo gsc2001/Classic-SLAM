@@ -64,7 +64,7 @@ class Optimizer:
         dx = self.get_gn_change()
         self.__current += dx
         self.print_info()
-        return abs(self.loss() - self.prev_loss) < 1e-5
+        return abs(self.loss() - self.prev_loss) < 1e-4
 
     def lm_update(self):
         self.__iter += 1
@@ -76,7 +76,7 @@ class Optimizer:
             self.__current += dx
             self.lm_lambda /= 10
             self.print_info()
-            return abs(self.loss() - self.prev_loss) < 1e-5
+            return abs(self.loss() - self.prev_loss) < 1e-4
         else:
             print("LM: Update Rejected")
             self.lm_lambda *= 10

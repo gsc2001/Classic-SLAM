@@ -1,2 +1,5 @@
 .idea
 .ipynb_checkpoints
+output/
+__pycache__/
+*.zip

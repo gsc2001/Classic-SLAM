@@ -3,7 +3,7 @@ import numpy as np
 import logging
 from optimizer import Optimizer
 
-logging.basicConfig(filename='output/run.log', level=logging.DEBUG)
+logging.basicConfig(filename='output/run.log', level=logging.INFO)
 logger = logging.getLogger("Optimizer")
 
 get_next_pose = lambda initial, change: np.array(
@@ -138,8 +138,9 @@ def draw(X, Y, THETA, name):
 
 def main():
     info_mat = np.eye(f_initial.shape[0])
-    values = [(500,700,1000)]
+    values = [(500, 700, 1000)]
     for od_info, loop_info, fix_info in values:
+        plt.clf()
         n_od = 3 * len(od_constraints)
         n_loop = 3 * len(loop_constraints)
 
@@ -148,19 +149,22 @@ def main():
             n_loop)
         info_mat[-3:, -3:] = fix_info * np.eye(3)
         state = state_vector.copy()
-        solver = Optimizer(f, jac, state, info_mat, algo='LM', lm_lambda=1e-3)
-        print(solver.losses)
-        # plt.plot(solver.losses)
-        # plt.savefig(f"output/{fix_info}_{loop_info}_{od_info}_loss.png")
+        solver = Optimizer(f, jac, state, info_mat, algo='LM', lm_lambda=1e-3,
+                           n_iter=1000)
+        solver.optimize()
+
+        plt.plot(solver.losses)
+        plt.savefig(f"output/{fix_info}_{loop_info}_{od_info}_loss.png")
+        plt.clf()
 
         final_vector = solver.get_current()
 
         poses = final_vector.reshape(-1, 3)
-        # draw(poses[:, 0], poses[:, 1], poses[:, 2],
-        #      f"output/{fix_info}_{loop_info}_{od_info}_path.png")
-        #
-        # logger.info(f"{fix_info}_{loop_info}_{od_info}: {solver.loss()}")
+        draw(poses[:, 0], poses[:, 1], poses[:, 2],
+             f"output/{fix_info}_{loop_info}_{od_info}_path.png")
+        plt.clf()
 
+        logger.info(f"{fix_info}_{loop_info}_{od_info}: {solver.loss()}")
 
 
 if __name__ == '__main__':
