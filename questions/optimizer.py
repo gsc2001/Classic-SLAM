@@ -1,7 +1,8 @@
 from typing import Callable
+# import jax.numpy as np
 import numpy as np
 import logging
-
+print('hi')
 
 class Optimizer:
     def __init__(self, f: Callable[[np.ndarray], np.ndarray],
@@ -53,6 +54,15 @@ class Optimizer:
         dx = -np.linalg.inv(H) @ b
 
         return dx
+    
+#     def get_lm_change(self) -> np.ndarray:
+#         J = self.jac(self.__current)
+#         H = J.T @ self.info_mat @ J
+#         H += self.lm_lambda * jnp.eye(H.shape[0])
+#         b = J.T @ self.info_mat.T @ self.f(self.__current)
+#         dx = -jnp.linalg.pinv(H) @ b
+
+#         return dx
 
     def print_info(self):
         print(f"Iteration: {self.__iter} / {self.n_iter}")
@@ -79,6 +89,7 @@ class Optimizer:
             return abs(self.loss() - self.prev_loss) < 1e-4
         else:
             print("LM: Update Rejected")
+            self.__current += dx
             self.lm_lambda *= 10
             return False
 
